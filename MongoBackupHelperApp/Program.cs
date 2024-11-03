@@ -1,10 +1,17 @@
-﻿namespace MongoBackupHelperApp
+﻿using MongoDB.Driver;
+
+namespace MongoBackupHelperApp
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            AppConfig();
+        }
+
+        private static void AppConfig()
+        {
+            throw new NotImplementedException();
         }
     }
 }
