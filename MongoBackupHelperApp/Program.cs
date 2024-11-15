@@ -1,10 +1,8 @@
-﻿
-
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoBackupHelperApp.Config;
-using System.Security.Authentication.ExtendedProtection;
+using System.Text.Json;
 
 namespace MongoBackupHelperApp
 {
@@ -16,11 +14,20 @@ namespace MongoBackupHelperApp
             {
                 AppConfig();
 
-            }catch(Exception ex)
-            {
-                Console.WriteLine(ex.Message);
             }
-           
+            catch (FileNotFoundException ex)
+            {
+                Console.WriteLine($"Configuration file not found {ex.Message}");
+            }
+            catch (JsonException ex)
+            {
+                Console.WriteLine($"Unable to parse config file {ex.Message}"); 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unhandled error {ex.Message}");
+            }
+
         }
 
         private static void AppConfig()
@@ -28,20 +35,20 @@ namespace MongoBackupHelperApp
 
             var serviceCollection = new ServiceCollection();
 
-            var builder= new ConfigurationBuilder()
+            var builder = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 // optional false — файл обязателен, и приложение завершится с ошибкой, если файл не найден.
                 // reloadonchange true — конфигурация будет автоматически обновляться, если файл изменится.
-                .AddJsonFile("options1.json",optional:false,reloadOnChange:true) 
+                .AddJsonFile("options.json", optional: false, reloadOnChange: true)
                 .Build();
 
             serviceCollection.Configure<AppConfig>(builder.GetRequiredSection("Options"));
 
-            var serviceProvider= serviceCollection.BuildServiceProvider();
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
             // Пример получения конфигурации из DI контейнера через IOptions
             var appConfig = serviceProvider.GetRequiredService<IOptions<AppConfig>>().Value;
-
+            appConfig.Validate();
             Console.WriteLine($"Connection String: {appConfig.ConnectionString}");
             Console.WriteLine($"Backup Folder: {appConfig.BackupFolder}");
         }
