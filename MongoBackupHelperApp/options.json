@@ -1,6 +1,7 @@
 {
   "Options": {
     "ConnectionString": "mongodb://localhost:27017",
-    "BackupFolder": "C:\\Users\\Orkhan\\Desktop\\MongoBackup"
+    "BackupFolder": "C:\\Users\\Orkhan\\Desktop\\MongoBackup",
+    "DataBaseName": "UploadTest"
   }
 }

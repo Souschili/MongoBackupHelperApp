@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using MongoBackupHelperApp.Config;
 using System.Text.Json;
 
 namespace MongoBackupHelperApp
@@ -51,6 +50,7 @@ namespace MongoBackupHelperApp
             appConfig.Validate();
             Console.WriteLine($"Connection String: {appConfig.ConnectionString}");
             Console.WriteLine($"Backup Folder: {appConfig.BackupFolder}");
+            Console.WriteLine($"Data Base: {appConfig.DataBaseName}");
         }
     }
 }
