@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using MongoBackupHelperApp.Services;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 
@@ -8,28 +9,15 @@ namespace MongoBackupHelperApp
 {
     internal class Program
     {
-        private static AppConfig _config;
+        private static MongoUploaderService _service;
         static async Task Main(string[] args)
         {
             try
             {
                 AppConfig();
-                Console.WriteLine($"Connection String: {_config.ConnectionString}");
-                Console.WriteLine($"Backup Folder: {_config.BackupFolder}");
-                Console.WriteLine($"Data Base: {_config.DataBaseName}");
-
-                if (!Directory.Exists(_config.BackupFolder))
-                {
-                    throw new DirectoryNotFoundException($"Directory {_config.BackupFolder} not found");
-                }
-
-               // var files=Directory.GetFiles(_config.BackupFolder);
-                var files=Directory.GetFiles(_config.BackupFolder,"*.json");
-                var name=Path.GetFileName(files[0]);
-                var first = name.IndexOf(".");
-                var end = name.LastIndexOf(".");
-                Console.WriteLine($"start:{first}---end:{end}");
-                Console.WriteLine(name.Substring(9+1,22-9-1));
+                _service.StartUpload();
+               
+               
             }
             catch (FileNotFoundException ex)
             {
@@ -59,14 +47,12 @@ namespace MongoBackupHelperApp
                 .Build();
 
             serviceCollection.Configure<AppConfig>(builder.GetRequiredSection("Options"));
-
+            serviceCollection.AddScoped<MongoUploaderService>();
+            serviceCollection.AddScoped<FileManagerService>();
             var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            // Пример получения конфигурации из DI контейнера через IOptions
-            var appConfig = serviceProvider.GetRequiredService<IOptions<AppConfig>>().Value;
-            appConfig.Validate();
-
-            _config = appConfig;
+            
+            _service=serviceProvider.GetRequiredService<MongoUploaderService>();
+            
         }
     }
 }

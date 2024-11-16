@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,17 @@ namespace MongoBackupHelperApp.Services
 {
     internal class MongoUploaderService
     {
+        private readonly FileManagerService _fileManagerService;
 
+        public MongoUploaderService(FileManagerService fileManagerService)
+        {
+            _fileManagerService = fileManagerService;
+        }
+
+        public void StartUpload()
+        {
+            _fileManagerService.ParseFile();
+        }
 
     }
 }
