@@ -34,16 +34,15 @@ namespace MongoBackupHelperApp.Services
             return null;
         }
 
-        public Dictionary<string, BsonDocument> GetUploadInfoAndData(List<FileInfo> files)
+        public Dictionary<string, List<BsonDocument>> GetUploadInfoAndData(List<FileInfo> files)
         {
-            Dictionary<string,BsonDocument> uploadInfo= new Dictionary<string, BsonDocument>();
+            Dictionary<string,List<BsonDocument>> uploadInfo= new Dictionary<string, List<BsonDocument>>();
             foreach (var item in files)
             {
-                
+                Console.WriteLine(item);
             }
             return uploadInfo;
         }
-
 
     }
 }

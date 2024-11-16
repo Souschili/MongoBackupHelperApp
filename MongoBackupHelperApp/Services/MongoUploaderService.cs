@@ -20,15 +20,8 @@ namespace MongoBackupHelperApp.Services
         {
             //1 получили имена файлов
             var files=_fileManagerService.GetFiles();
-
-         
-
             
             Console.WriteLine();
-
-
-
-           
         }
 
     }
