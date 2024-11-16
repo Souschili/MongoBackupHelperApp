@@ -5,7 +5,7 @@ using MongoDB.Bson.Serialization;
 
 namespace MongoBackupHelperApp.Services
 {
-    internal class FileManagerService
+    internal class FileManagerService : IFileManagerService
     {
         private readonly IOptions<AppConfig> _appConfig;
 
