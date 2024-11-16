@@ -18,7 +18,17 @@ namespace MongoBackupHelperApp.Services
 
         public void StartUpload()
         {
-            _fileManagerService.ParseFile();
+            //1 получили имена файлов
+            var files=_fileManagerService.GetFiles();
+
+         
+
+            
+            Console.WriteLine();
+
+
+
+           
         }
 
     }

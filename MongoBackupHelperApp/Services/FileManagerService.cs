@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 
 namespace MongoBackupHelperApp.Services
 {
@@ -15,20 +17,33 @@ namespace MongoBackupHelperApp.Services
         public IEnumerable<string> GetFiles()
         {
             // чекаем есть ли эта директория физически
-            if(!Directory.Exists(_appConfig.Value.BackupFolder))
+            if (!Directory.Exists(_appConfig.Value.BackupFolder))
             {
                 throw new InvalidOperationException($"Unable to find backup directory path {_appConfig.Value.BackupFolder}");
             }
 
-            // получаем список файлов,убираем полный путь ,если их нет пишем что ноль и выходим
-            var files=new DirectoryInfo(_appConfig.Value.BackupFolder)
-                .EnumerateFiles()
-                .Select(x=> x.Name);
+            //// получаем список файлов,убираем полный путь ,если их нет пишем что ноль и выходим
+            var files = new DirectoryInfo(_appConfig.Value.BackupFolder)
+                .EnumerateFiles().ToList();
 
             if (!files.Any())
                 throw new Exception($"Files to upload not found in {_appConfig.Value.BackupFolder}");
-            
-           return files;
+
+            GetUploadInfoAndData(files);
+
+            return null;
         }
+
+        public Dictionary<string, BsonDocument> GetUploadInfoAndData(List<FileInfo> files)
+        {
+            Dictionary<string,BsonDocument> uploadInfo= new Dictionary<string, BsonDocument>();
+            foreach (var item in files)
+            {
+                
+            }
+            return uploadInfo;
+        }
+
+
     }
 }
