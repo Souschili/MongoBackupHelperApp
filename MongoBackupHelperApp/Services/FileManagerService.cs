@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using MongoBackupHelperApp.Model;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 
@@ -36,12 +37,49 @@ namespace MongoBackupHelperApp.Services
 
         public Dictionary<string, List<BsonDocument>> GetUploadInfoAndData(List<FileInfo> files)
         {
-            Dictionary<string,List<BsonDocument>> uploadInfo= new Dictionary<string, List<BsonDocument>>();
-            foreach (var item in files)
-            {
-                Console.WriteLine(item);
-            }
+            Dictionary<string, List<BsonDocument>> uploadInfo = new Dictionary<string, List<BsonDocument>>();
+            files.AsParallel()
+                .Select(async x => new UploadInfoModel
+                {
+                    CollectionName = ParseCollectionName(x),
+                    Documents = await GetDataFromFile(x)
+                });
             return uploadInfo;
+        }
+
+        private async Task<IEnumerable<BsonDocument>> GetDataFromFile(FileInfo file)
+        {
+            if (!file.Exists)
+                throw new FileNotFoundException($"File not exitst {file.Name}", nameof(file));
+            try
+            {
+                var jsonContent = await File.ReadAllTextAsync(file.FullName);
+                List<BsonDocument> documents = BsonSerializer.Deserialize<List<BsonDocument>>(jsonContent);
+                return documents;
+            }
+            catch (IOException ex)
+            {
+                throw new Exception($"Error reading file: {file.Name}", ex);
+            }
+            catch (BsonSerializationException ex)
+            {
+                throw new Exception($"Error deserializing BSON from file: {file.Name}", ex);
+            }
+
+        }
+
+        private string ParseCollectionName(FileInfo file)
+        {
+            if (file == null)
+                throw new ArgumentNullException(nameof(file), "FileInfo cannot be null.");
+
+            if (file.Name.Count(c => c == '.') < 2)
+                throw new ArgumentException($"Invalid file name format: {file.Name}", nameof(file));
+
+            var start = file.Name.IndexOf(".") + 1;
+            var end = file.Name.LastIndexOf(".");
+
+            return file.Name[start..end];
         }
 
     }
