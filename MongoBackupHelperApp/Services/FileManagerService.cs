@@ -15,7 +15,7 @@ namespace MongoBackupHelperApp.Services
             _appConfig = appConfig;
         }
 
-        public IEnumerable<string> GetFiles()
+        private IEnumerable<FileInfo> GetFiles()
         {
             // чекаем есть ли эта директория физически
             if (!Directory.Exists(_appConfig.Value.BackupFolder))
@@ -23,28 +23,41 @@ namespace MongoBackupHelperApp.Services
                 throw new InvalidOperationException($"Unable to find backup directory path {_appConfig.Value.BackupFolder}");
             }
 
-            //// получаем список файлов,убираем полный путь ,если их нет пишем что ноль и выходим
+            // получаем список файлов,убираем полный путь ,если их нет пишем что ноль и выходим
             var files = new DirectoryInfo(_appConfig.Value.BackupFolder)
-                .EnumerateFiles().ToList();
+                .EnumerateFiles();
 
             if (!files.Any())
                 throw new Exception($"Files to upload not found in {_appConfig.Value.BackupFolder}");
 
-            GetUploadInfoAndData(files);
-
-            return null;
+            return files;
         }
 
-        public Dictionary<string, List<BsonDocument>> GetUploadInfoAndData(List<FileInfo> files)
+        public async Task<Dictionary<string, IEnumerable<BsonDocument>>> GetUploadInfoAndData()
         {
-            Dictionary<string, List<BsonDocument>> uploadInfo = new Dictionary<string, List<BsonDocument>>();
-            files.AsParallel()
-                .Select(async x => new UploadInfoModel
+            try
+            {
+
+                var files = GetFiles();
+                var parseTasks = files.Select(async x => new UploadInfoModel
                 {
                     CollectionName = ParseCollectionName(x),
                     Documents = await GetDataFromFile(x)
                 });
-            return uploadInfo;
+
+                var parseResult = await Task.WhenAll(parseTasks);
+                var dictionary = parseResult.ToDictionary(f => f.CollectionName, f => f.Documents ?? Enumerable.Empty<BsonDocument>());
+                return dictionary;
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var innerEx in ex.InnerExceptions)
+                {
+                    Console.WriteLine($"Task failed with error: {innerEx.Message}");
+                    Console.WriteLine(innerEx.StackTrace);
+                }
+                return new Dictionary<string, IEnumerable<BsonDocument>>();
+            }
         }
 
         private async Task<IEnumerable<BsonDocument>> GetDataFromFile(FileInfo file)
