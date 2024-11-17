@@ -103,4 +103,8 @@ catch (Exception ex)
     Console.WriteLine($"Unhandled error {ex.Message}");
 }
 ```
+## Contributing
+Feel free to fork and make changes! Contributions are welcome to improve the application.
 
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
