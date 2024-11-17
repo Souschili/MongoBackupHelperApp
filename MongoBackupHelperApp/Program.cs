@@ -56,7 +56,6 @@ namespace MongoBackupHelperApp
             serviceCollection.AddScoped<IMongoUploaderService,MongoUploaderService>();
             serviceCollection.AddScoped<IFileManagerService, FileManagerService>();
 
-
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
 
