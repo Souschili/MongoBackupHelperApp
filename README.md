@@ -30,7 +30,45 @@ In the root of the project, create an options.json file with your MongoDB connec
 {
   "Options": {
     "ConnectionString": "mongodb://your_connection_string",
+    "BackupFolder": "you_backup_folder",
     "DataBaseName": "your_database_name"
   }
+}
+```
+### 3. Build the project
+To build the project, run:
+```bash
+dotnet build
+```
+### 4. Run the application
+After building the application, run it using:
+```bash
+dotnet run
+```
+## Usage
+
+### Uploading Backup
+
+The `UploadBackupAsync()` method in the `MongoUploaderService` handles uploading files to MongoDB. Files are processed and uploaded in parallel, ensuring optimal performance without chunking.
+
+### Code Example
+```csharp
+public async Task UploadBackupAsync()
+{
+    // 1. Retrieve file data
+    var filesData = await _fileManagerService.GetUploadInfoAndData();
+    
+    if (filesData == null)
+        throw new ArgumentNullException("No data to upload", nameof(filesData));
+
+    // Asynchronous execution with task completion
+    var uploadTask = filesData.Select(x => UploadToCollection(x));
+    await Task.WhenAll(uploadTask);
+    
+    // Parallel execution without result (commented out for your choice)
+    // await Parallel.ForEachAsync(filesData, new ParallelOptions { MaxDegreeOfParallelism = 10 }, async (file, _) =>
+    // {
+    //     await UploadToCollection(file);
+    // });
 }
 ```
