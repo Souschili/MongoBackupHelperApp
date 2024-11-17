@@ -9,7 +9,7 @@ namespace MongoBackupHelperApp
 {
     internal class Program
     {
-        private static MongoUploaderService _service;
+        private static IMongoUploaderService _service;
         static async Task Main(string[] args)
         {
             try
@@ -60,7 +60,7 @@ namespace MongoBackupHelperApp
 
 
             // присваиваем ,так как статик методы и по другому неоч красиво
-            _service = serviceProvider.GetRequiredService<MongoUploaderService>();
+            _service = serviceProvider.GetRequiredService<IMongoUploaderService>();
 
         }
     }
