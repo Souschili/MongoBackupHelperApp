@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoBackupHelperApp.Services;
 using MongoDB.Driver;
-using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace MongoBackupHelperApp
@@ -17,8 +16,6 @@ namespace MongoBackupHelperApp
             {
                 AppConfig();
                 await _service.UploadBackupAsync();
-
-
             }
             catch (FileNotFoundException ex)
             {
@@ -51,12 +48,12 @@ namespace MongoBackupHelperApp
             // DI container
             serviceCollection.AddSingleton<IMongoDatabase>(cfg =>
             {
-                var config= cfg.GetRequiredService<IOptions<AppConfig>>().Value;
+                var config = cfg.GetRequiredService<IOptions<AppConfig>>().Value;
                 config.Validate(); // проверка конфигов
                 IMongoClient client = new MongoClient(config.ConnectionString);
                 return client.GetDatabase(config.DataBaseName);
             });
-            serviceCollection.AddScoped<MongoUploaderService>();
+            serviceCollection.AddScoped<IMongoUploaderService,MongoUploaderService>();
             serviceCollection.AddScoped<IFileManagerService, FileManagerService>();
 
 

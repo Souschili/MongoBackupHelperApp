@@ -1,17 +1,10 @@
-﻿using Microsoft.Extensions.Options;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MongoBackupHelperApp.Services
 {
-    internal class MongoUploaderService
+    internal class MongoUploaderService : IMongoUploaderService
     {
-        private const int CHUNK_SIZE = 5;
         private readonly IFileManagerService _fileManagerService;
         private readonly IMongoDatabase _database;
 
