@@ -72,3 +72,35 @@ public async Task UploadBackupAsync()
     // });
 }
 ```
+## Uploading to MongoDB
+```csharp
+private async Task UploadToCollection(KeyValuePair<string, IEnumerable<BsonDocument>> uploadData)
+{
+    var collection = _database.GetCollection<BsonDocument>(uploadData.Key);
+    await collection.InsertManyAsync(uploadData.Value);
+
+    Console.WriteLine($"Upload to {uploadData.Key} done");
+}
+```
+## Error Handling
+The application includes basic error handling for common exceptions like file not found, JSON parsing errors, and other unhandled exceptions. You can further extend this based on your needs.
+```csharp
+try
+{
+    AppConfig();
+    await _service.UploadBackupAsync();
+}
+catch (FileNotFoundException ex)
+{
+    Console.WriteLine($"Configuration file not found {ex.Message}");
+}
+catch (JsonException ex)
+{
+    Console.WriteLine($"Unable to parse config file {ex.Message}");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"Unhandled error {ex.Message}");
+}
+```
+
