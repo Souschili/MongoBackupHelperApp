@@ -24,5 +24,5 @@ This is a console application designed to upload backup data to MongoDB efficien
 git clone <repository_url>
 cd MongoBackupHelperApp
 ```
-2. Configuration
+###2. Configuration
 In the root of the project, create an options.json file with your MongoDB connection details:
