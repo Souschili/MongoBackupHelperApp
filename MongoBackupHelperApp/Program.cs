@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using MongoBackupHelperApp.Services;
+using MongoDB.Driver;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 
@@ -15,9 +16,9 @@ namespace MongoBackupHelperApp
             try
             {
                 AppConfig();
-                _service.StartUpload();
-               
-               
+                await _service.UploadBackupAsync();
+
+
             }
             catch (FileNotFoundException ex)
             {
@@ -47,12 +48,24 @@ namespace MongoBackupHelperApp
                 .Build();
 
             serviceCollection.Configure<AppConfig>(builder.GetRequiredSection("Options"));
+            // DI container
+            serviceCollection.AddSingleton<IMongoDatabase>(cfg =>
+            {
+                var config = cfg.GetRequiredService<AppConfig>();
+                config.Validate(); // проверка конфигов
+                IMongoClient client = new MongoClient(config.ConnectionString);
+                return client.GetDatabase(config.DataBaseName);
+            });
             serviceCollection.AddScoped<MongoUploaderService>();
-            serviceCollection.AddScoped<FileManagerService>();
+            serviceCollection.AddScoped<IFileManagerService, FileManagerService>();
+
+
             var serviceProvider = serviceCollection.BuildServiceProvider();
-            
-            _service=serviceProvider.GetRequiredService<MongoUploaderService>();
-            
+
+
+            // присваиваем ,так как статик методы и по другому неоч красиво
+            _service = serviceProvider.GetRequiredService<MongoUploaderService>();
+
         }
     }
 }

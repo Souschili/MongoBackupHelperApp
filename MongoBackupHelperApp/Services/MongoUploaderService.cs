@@ -9,17 +9,17 @@ namespace MongoBackupHelperApp.Services
 {
     internal class MongoUploaderService
     {
-        private readonly FileManagerService _fileManagerService;
+        private readonly IFileManagerService _fileManagerService;
 
-        public MongoUploaderService(FileManagerService fileManagerService)
+        public MongoUploaderService(IFileManagerService fileManagerService)
         {
             _fileManagerService = fileManagerService;
         }
 
-        public void StartUpload()
+        public async Task UploadBackupAsync()
         {
             //1 получили имена файлов
-            var files=_fileManagerService.GetUploadInfoAndData();
+            var files=await _fileManagerService.GetUploadInfoAndData();
             
             Console.WriteLine();
         }
