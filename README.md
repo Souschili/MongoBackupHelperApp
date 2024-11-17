@@ -26,3 +26,11 @@ cd MongoBackupHelperApp
 ```
 ### 2. Configuration
 In the root of the project, create an options.json file with your MongoDB connection details:
+```bash
+{
+  "Options": {
+    "ConnectionString": "mongodb://your_connection_string",
+    "DataBaseName": "your_database_name"
+  }
+}
+```
