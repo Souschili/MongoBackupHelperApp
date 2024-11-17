@@ -51,7 +51,7 @@ namespace MongoBackupHelperApp
             // DI container
             serviceCollection.AddSingleton<IMongoDatabase>(cfg =>
             {
-                var config = cfg.GetRequiredService<AppConfig>();
+                var config= cfg.GetRequiredService<IOptions<AppConfig>>().Value;
                 config.Validate(); // проверка конфигов
                 IMongoClient client = new MongoClient(config.ConnectionString);
                 return client.GetDatabase(config.DataBaseName);
